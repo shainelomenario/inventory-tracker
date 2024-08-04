@@ -74,7 +74,7 @@ export default function Home() {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       const { quantity, category } = docSnap.data();
-      await setDoc(docRef, { quantity: quantity + 1, category });
+      await setDoc(docRef, { quantity: quantity + 1, category }, { merge: true });
     } else {
       await setDoc(docRef, { quantity: 1, category: itemCategory });
     }
@@ -88,7 +88,7 @@ export default function Home() {
     if (docSnap.exists()) {
       const { quantity, category } = docSnap.data();
       if (quantity > 1) {
-        await setDoc(docRef, { quantity: quantity - 1, category });
+        await setDoc(docRef, { quantity: quantity - 1, category }, { merge: true });
       } else {
         await deleteDoc(docRef);
       }
@@ -105,13 +105,13 @@ export default function Home() {
   const updateItem = async () => {
     if (currentItem) {
       const oldDocRef = doc(collection(firestore, 'inventory'), currentItem);
-      const newDocRef = doc(collection(firestore, 'inventory'), itemName);
 
       // If the name has changed, create a new document with the updated name and delete the old one
       if (currentItem !== itemName) {
         const oldDocSnap = await getDoc(oldDocRef);
         if (oldDocSnap.exists()) {
           const oldData = oldDocSnap.data();
+          const newDocRef = doc(collection(firestore, 'inventory'), itemName);
           await setDoc(newDocRef, {
             ...oldData,
             name: itemName,
