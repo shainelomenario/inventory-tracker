@@ -1,13 +1,13 @@
 /* globals.css */
 
 * {
-  font-family: 'Montserrat', sans-serif !important;
-  font-weight: 400; /* Default weight */
+  font-family: 'DM_Sans', sans-serif !important;
+  font-weight: 300; /* Default weight */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 h1, h2, h3, h4, h5, h6, strong {
-  font-weight: 700; /* Bold weight for headings and strong text */
+  font-weight: 300; /* Bold weight for headings and strong text */
 }

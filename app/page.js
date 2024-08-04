@@ -1,4 +1,4 @@
-'use client' // To make it a client-sided app
+'use client'; // To make it a client-sided app
 import { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { firestore } from '@/firebase';
@@ -104,8 +104,27 @@ export default function Home() {
 
   const updateItem = async () => {
     if (currentItem) {
-      const docRef = doc(collection(firestore, 'inventory'), currentItem);
-      await setDoc(docRef, { name: itemName, category: itemCategory, quantity: itemQuantity });
+      const oldDocRef = doc(collection(firestore, 'inventory'), currentItem);
+      const newDocRef = doc(collection(firestore, 'inventory'), itemName);
+
+      // If the name has changed, create a new document with the updated name and delete the old one
+      if (currentItem !== itemName) {
+        const oldDocSnap = await getDoc(oldDocRef);
+        if (oldDocSnap.exists()) {
+          const oldData = oldDocSnap.data();
+          await setDoc(newDocRef, {
+            ...oldData,
+            name: itemName,
+            category: itemCategory,
+            quantity: itemQuantity,
+          });
+          await deleteDoc(oldDocRef);
+        }
+      } else {
+        // If the name hasn't changed, simply update the existing document
+        await setDoc(oldDocRef, { category: itemCategory, quantity: itemQuantity }, { merge: true });
+      }
+
       await updateInventory();
       handleUpdateClose();
     }
@@ -115,7 +134,7 @@ export default function Home() {
   const handleClose = () => setOpen(false);
   const handleUpdateOpen = (item) => {
     setCurrentItem(item.name);
-    setItemName(item.name);
+    setItemName(item.name); // Keep the item name unchanged to avoid creating a new document
     setItemCategory(item.category);
     setItemQuantity(item.quantity);
     setUpdateOpen(true);
